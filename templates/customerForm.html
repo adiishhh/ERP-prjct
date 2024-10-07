@@ -1,0 +1,47 @@
+{% extends "index.html" %}
+
+{% block customerForm_content %}
+<style>
+    .contact-text{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        position: absolute;
+        top: 100px;
+    }
+    .form-content{
+        margin: 8% 0%;
+    }
+    .submit-button{
+        width: 100%;
+        background-color: green;
+        padding: 3% 0%;
+        color: white;
+    }
+</style>
+<div class="contact-text">
+   <form method="post">
+    {% csrf_token %}
+    <div class="form-content">
+        <h3>Enter Name:</h3>
+        <input type="text" name="name">
+    </div>
+    <div class="form-content">
+        <h3>Enter Phone Number:</h3>
+        <input type="text" name="phone">
+    </div>
+    <div class="form-content">
+        <h3>Enter Email:</h3>
+        <input type="text" name="email">
+    </div>
+    <div class="form-content">
+        <h3>Enter Place:</h3>
+        <input type="text" name="place">
+    </div>
+    <button type="submit" class="submit-button">Send</button>
+   </form>
+</div>
+
+
+
+{% endblock customerForm_content %}

@@ -1,0 +1,69 @@
+{% extends "index.html" %}
+
+{% block product_content %}
+
+<style>
+    *{
+        color: black;
+    }
+   table{
+        border: 1px solid black;
+        width: 80%;
+        height: auto;
+    }
+    .table_container{
+        width: 80%;
+        display: flex;
+        padding: 3% 0%;
+        justify-content: center;
+        position: absolute;
+        top: 100px;
+        right: 0px;
+    }
+    th,td{
+        border: 1px solid black;
+    }
+    .action{
+        display: flex;
+        justify-content: space-around;
+    }
+    tr a{
+        width: 50px;
+        color: black;
+    }
+    .create_btn{
+        position: absolute;
+        right: 110px;
+        top: 5px;
+        width: 100px;
+        height: 30px;
+    }
+</style>
+<div class="table_container">
+    <button class="create_btn"><a href="{% url 'productForm' %}" style = "color : black;">Create</a></button>
+    <table>
+        <tbody>
+            <th>Category</th>
+            <th>Name</th>
+            <th>Unit</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tbody>
+        <tbody>
+            {% for e in product %}
+            <tr>
+                <td>{{e.product.name}}</td>
+                <td>{{e.name}}</td>
+                <td>{{e.unit}}</td>
+                <td>{{e.price}}</td>
+
+                <td class="action">
+                    <button ><a href="{% url 'updatePageProduct' e.id %}" style = "color : black;">Edit</a></button>
+                    <button><a href="{% url 'deleteDataProduct' e.id %}" style = "color : black;">Delete</a></button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock product_content %}
+</div>

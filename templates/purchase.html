@@ -1,0 +1,73 @@
+{% extends "index.html" %}
+
+{% block purchase_content %}
+
+<style>
+    *{
+        color: black;
+    }
+   table{
+        border: 1px solid black;
+        width: 80%;
+        height: auto;
+    }
+    .table_container{
+        width: 80%;
+        display: flex;
+        padding: 3% 0%;
+        justify-content: center;
+        position: absolute;
+        top: 100px;
+        right: 0px;
+    }
+    th,td{
+        border: 1px solid black;
+    }
+    .action{
+        display: flex;
+        justify-content: space-around;
+    }
+    tr a{
+        width: 50px;
+        color: black;
+    }
+    .create_btn{
+        position: absolute;
+        right: 110px;
+        top: 5px;
+        width: 100px;
+        height: 30px;
+    }
+</style>
+<div class="table_container">
+    <button class="create_btn"><a href="{% url 'purchaseForm' %}" style = "color : black;">Create</a></button>
+    <table>
+        <tbody>
+            <th>Bill Number</th>
+            <th>Vendor</th>
+            <th>Product</th>
+            <th>Buy Price</th>
+            <th>Quantity</th>
+            <th>Sell Price</th>
+            <th>Action</th>
+        </tbody>
+        <tbody>
+            {% for f in purchase %}
+            <tr>
+                <td>{{f.bill}}</td>
+                <td>{{f.vendor.name}}</td>
+                <td>{{f.product.name}}</td>
+                <td>{{f.buy}}</td>
+                <td>{{f.quantity}}</td>
+                <td>{{f.sell}}</td>
+
+                <td class="action">
+                    {% comment %} <button ><a href="{% url 'updatePageProduct' e.id %}" style = "color : black;">Edit</a></button> {% endcomment %}
+                    <button><a href="{% url 'deleteDataPurchase' f.id %}" style = "color : black;">Delete</a></button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock purchase_content %}
+</div>

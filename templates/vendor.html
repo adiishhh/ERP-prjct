@@ -1,0 +1,67 @@
+{% extends "index.html" %}
+
+{% block vendor_content %}
+
+<style>
+    *{
+        color: black;
+    }
+   table{
+        border: 1px solid black;
+        width: 80%;
+        height: auto;
+    }
+    .table_container{
+        width: 80%;
+        display: flex;
+        padding: 3% 0%;
+        justify-content: center;
+        position: absolute;
+        top: 100px;
+        right: 0px;
+    }
+    th,td{
+        border: 1px solid black;
+    }
+    .action{
+        display: flex;
+        justify-content: space-around;
+    }
+    tr a{
+        width: 50px;
+        color: black;
+    }
+    .create_btn{
+        position: absolute;
+        right: 110px;
+        top: 5px;
+        width: 100px;
+        height: 30px;
+    }
+</style>
+<div class="table_container">
+    <button class="create_btn"><a href="{% url 'vendorForm' %}" style = "color : black;">Create</a></button>
+    <table>
+        <tbody>
+            <th>Name</th>
+            <th>Number</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tbody>
+        <tbody>
+            {% for d in vendor %}
+            <tr>
+                <td>{{d.name}}</td>
+                <td>{{d.phone}}</td>
+                <td>{{d.email}}</td>
+
+                <td class="action">
+                    {% comment %} <button ><a href="{% url 'updatePageVendor' a.id %}" style = "color : black;">Edit</a></button> {% endcomment %}
+                    <button><a href="{% url 'deleteDataVendor' d.id %}" style = "color : black;">Delete</a></button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock vendor_content %}
+</div>

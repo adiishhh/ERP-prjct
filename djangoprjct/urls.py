@@ -1,0 +1,38 @@
+from django.contrib import admin
+from django.urls import include, path
+from home.views import *
+
+urlpatterns = [
+    path('__reload__/', include('django_browser_reload.urls')),
+    path('admin/', admin.site.urls),
+    path('', home, name='home'),
+    path('customer', customer, name='customer'),
+    path('customerForm', customerForm, name = 'customerForm'),
+    path('updatePage/<int:id>', updatePage, name='updatePage'),
+    path('deleteData/<int:id>', deleteData, name='deleteData'),
+    path('employee', employee, name='employee'),
+    path('employeeForm', employeeForm, name='employeeForm'),
+    path('updateEmployee/<int:id>', updateEmployee, name='updateEmployee'),
+    path('deleteEmployee/<int:id>', deleteEmployee, name='deleteEmployee'),
+    path('category', category, name='category'),
+    path('categoryForm', categoryForm, name='categoryForm'),
+    path('deleteCategory/<int:id>', deleteCategory, name='deleteCategory'),
+    path('vendor', vendor, name='vendor'),
+    path('vendorForm', vendorForm, name='vendorForm'),
+    path('deleteDataVendor/<int:id>', deleteDataVendor, name='deleteDataVendor'),
+    path('product', product, name='product'),
+    path('productForm', productForm, name='productForm'),
+    path('updatePageProduct/<int:id>', updatePageProduct, name='updatePageProduct'),
+    path('deleteDataProduct/<int:id>', deleteDataProduct, name='deleteDataProduct'),
+    path('purchase', purchase, name='purchase'),
+    path('purchaseForm', purchaseForm, name='purchaseForm'),
+    path('deleteDataPurchase/<int:id>', deleteDataPurchase, name='deleteDataPurchase'),
+    path('stock', stock, name='stock'),
+    path('deleteDataStock/<int:id>', deleteDataStock, name='deleteDataStock'),
+    path('sales', sales, name='sales'),
+    path('salesForm', salesForm, name='salesForm'),
+    path('salesItemForm/<int:id>', salesItemForm, name='salesItemForm'),
+    path('deleteDataSales/<int:id>', deleteDataSales, name='deleteDataSales'),
+    path('deleteDataSaleItem/<int:id>', deleteDataSaleItem, name='deleteDataSaleItem'),
+    path('saleItem', saleItem, name='saleItem'),
+]

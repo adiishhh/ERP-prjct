@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0%;
+            padding: 0%;
+        }
+        .navbar{
+            background-color: rgb(15, 15, 50);
+            width: 20%;
+            height: 100%;
+            justify-content: center;
+        }
+        .nav_list{
+            padding: 10%;
+            padding-top: 35%;
+            list-style-type: none;
+            height: 100%;
+        }
+        a{
+            text-decoration: none;
+        }
+        li{
+            margin: 15% 0%;
+            color: antiquewhite;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav_list">
+            <a href="{% url 'customer' %}"><li>Customer</li></a>
+            <a href="{% url 'employee' %}"><li>Employee</li></a>
+            <a href="{% url 'category' %}"><li>Catogery</li></a>
+            <a href="{% url 'vendor' %}"><li>Vendor</li></a>
+            <a href="{% url 'product' %}"><li>Product</li></a>
+            <a href="{% url 'purchase' %}"><li>Purchase</li></a>
+            <a href="{% url 'stock' %}"><li>Stock</li></a>
+            <a href="{% url 'sales' %}"><li>Sales</li></a>
+            <a href="{% url 'saleItem' %}"><li>Sales Item</li></a>
+        </ul>
+    </nav>
+
+    {% block customer_content %}
+
+    {% endblock customer_content %}
+
+    {% block customerForm_content %}
+
+    {% endblock customerForm_content %}
+
+    {% block Update_content %}
+
+    {% endblock Update_content %}
+
+    {% block employee_content %}
+
+    {% endblock employee_content %}
+
+    {% block employeeForm_content %}
+
+    {% endblock employeeForm_content %}
+
+    {% block updateEmployee_content %}
+
+    {% endblock updateEmployee_content %}
+
+    {% block category_content %}
+
+    {% endblock category_content %}
+
+    {% block categoryForm_content %}
+
+    {% endblock categoryForm_content %}
+
+    {% block vendor_content %}
+
+    {% endblock vendor_content %}
+
+    {% block vendorForm_content %}
+
+    {% endblock vendorForm_content %}
+
+    {% block product_content %}
+
+    {% endblock product_content %}
+
+    {% block productForm_content %}
+
+    {% endblock productForm_content %}
+
+    {% block updateProduct_content %}
+
+    {% endblock updateProduct_content %}
+
+    {% block purchase_content %}
+
+    {% endblock purchase_content %}
+
+    {% block purchaseForm_content %}
+
+    {% endblock purchaseForm_content %}
+
+    {% block stock_content %}
+
+    {% endblock stock_content %}
+
+    {% block sales_content %}
+
+    {% endblock sales_content %}
+
+    {% block salesForm_content %}
+
+    {% endblock salesForm_content %}
+
+    {% block salesItemForm_content %}
+
+    {% endblock salesItemForm_content %}
+
+    {% block saleItem_content %}
+
+    {% endblock saleItem_content %}
+
+
+</body>
+</html>
