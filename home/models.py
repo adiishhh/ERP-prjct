@@ -100,3 +100,7 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.date} - {self.type}"
+    
+class expenseData(models.Model):
+    expense = models.CharField(max_length=200)
+    amount = models.CharField(max_length=200)

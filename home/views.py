@@ -183,18 +183,25 @@ def stock(request):
     if request.method == 'POST':
         product_id = request.POST.get('product')
         product = productFormData.objects.get(id=product_id)
+        
         purchases = purchaseFormData.objects.filter(product=product)
-        total_purchase_quantity = 0
-        for purchase in purchases:
-            if purchase.quantity:
-                total_purchase_quantity += int(purchase.quantity)
+        total_purchase_quantity = sum(int(purchase.quantity) for purchase in purchases if purchase.quantity)
+        
+        sales = SaleItem.objects.filter(stock__product=product)
+        total_sale_quantity = sum(int(sale.quantity) for sale in sales if sale.quantity)
+        
         if product.unit:
-            stock_quantity = int(product.unit) + total_purchase_quantity
-            if stock_quantity < 0:
-                stock_quantity = 0
+            total_quantity = int(product.unit) + total_purchase_quantity - total_sale_quantity
         else:
-            stock_quantity = 0
-        StockData.objects.create(product=product, total_quantity=stock_quantity, selling_price=product.price)
+            total_quantity = total_purchase_quantity - total_sale_quantity
+        
+        stock_data, created = StockData.objects.get_or_create(product=product, defaults={'total_quantity': total_quantity, 'selling_price': product.price})
+        
+        if not created:
+            stock_data.total_quantity = total_quantity
+            stock_data.selling_price = product.price
+            stock_data.save()
+    
     stocks = StockData.objects.all()
     return render(request, 'stock.html', {'products': products, 'stocks': stocks})
 
@@ -202,9 +209,6 @@ def deleteDataStock(request, id):
     data = StockData.objects.get(id=id)
     data.delete()
     return redirect('/stock')
-
-from django.shortcuts import render,redirect
-from .models import *
 
 def sales(request):
     sales = SalesForm.objects.all()
@@ -257,11 +261,39 @@ def saleItem(request):
 
 def accounts(request):
     transactions = Transaction.objects.all()
-    total_debit = sum(transaction.debit for transaction in transactions)
-    total_credit = sum(transaction.credit for transaction in transactions)
-    return render(request, 'accounts.html', {'transactions': transactions, 'total_debit': total_debit, 'total_credit': total_credit})
+    account_data = accountData.objects.all()
+    total_debit = sum(transaction.debit for transaction in transactions) + sum(data.debit for data in account_data)
+    total_credit = sum(transaction.credit for transaction in transactions) + sum(data.credit for data in account_data)
+    return render(request, 'accounts.html', {'transactions': transactions, 'account_data': account_data, 'total_debit': total_debit, 'total_credit': total_credit})
 
 def deleteDataAccounts(request, id):
     data = accountData.objects.get(id=id)
     data.delete()
     return redirect('/accounts')
+
+def expense(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        amount = request.POST.get('amount')
+        expense = expenseData.objects.create(name=name, amount=amount)
+        accountData.objects.create(debit=Decimal(amount), credit=0, type="Expense")
+        return redirect('/expense')
+    expense = expenseData.objects.all()
+    return render(request, 'expense.html', {'expense': expense})
+
+def expenseForm(request):
+    if request.method == 'POST':
+        expense = request.POST.get('expense')
+        amount = request.POST.get('amount')
+        data = expenseData.objects.create(expense=expense, amount=amount)
+        accountData.objects.create(debit=Decimal(amount), credit=0, type="Expense")
+        return redirect('/expense')
+    return render(request, 'expenseForm.html')
+
+def deleteExpense(request, id):
+    expense = expenseData.objects.get(id=id)
+    account_data = accountData.objects.filter(type="Expense", debit=expense.amount)
+    if account_data.exists():
+        account_data.delete()
+    expense.delete()
+    return redirect('/expense')

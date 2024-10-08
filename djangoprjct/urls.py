@@ -37,4 +37,7 @@ urlpatterns = [
     path('saleItem', saleItem, name='saleItem'),
     path('accounts', accounts, name='accounts'),
     path('deleteDataAccounts/<int:id>', deleteDataAccounts, name='deleteDataAccounts'),
+    path('expense', expense, name='expense'),
+    path('expenseForm', expenseForm, name='expenseForm'),
+    path('deleteExpense/<int:id>', deleteExpense, name='deleteExpense'),
 ]

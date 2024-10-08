@@ -78,6 +78,14 @@
                 <td>{{transaction.debit}}</td>
                 <td>{{transaction.credit}}</td>
                 <td>{{transaction.type}}</td>
+            </tr>
+            {% endfor %}
+            {% for data in account_data %}
+            <tr>
+                <td>{{data.debit}}</td>
+                <td>{{data.credit}}</td>
+                <td>{{data.type}}</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>

@@ -13,7 +13,7 @@
     }
     table{
         border: 1px solid black;
-        width: 100%;
+        width: 80%;
         height: auto;
     }
     th,td{
@@ -24,14 +24,14 @@
     <table>
         <tbody>
             <th>Sale info</th>
-            <th>Stock</th>
+            <th>Item</th>
             <th>Quantity</th>
         </tbody>
         <tbody>
             {% for sale_item in sale_items %}
             <tr>
                 <td>{{sale_item.sales_form.customer.name}} - {{sale_item.sales_form.employee.name}}</td>
-                <td>{{sale_item.stock.product.name}} - {{sale_item.stock.total_quantity}}</td>
+                <td>{{sale_item.stock.product.name}}</td>
                 <td>{{sale_item.quantity}}</td>
             </tr>
             {% endfor %}
