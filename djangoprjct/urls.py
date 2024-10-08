@@ -35,4 +35,6 @@ urlpatterns = [
     path('deleteDataSales/<int:id>', deleteDataSales, name='deleteDataSales'),
     path('deleteDataSaleItem/<int:id>', deleteDataSaleItem, name='deleteDataSaleItem'),
     path('saleItem', saleItem, name='saleItem'),
+    path('accounts', accounts, name='accounts'),
+    path('deleteDataAccounts/<int:id>', deleteDataAccounts, name='deleteDataAccounts'),
 ]

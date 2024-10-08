@@ -163,12 +163,15 @@ def purchaseForm(request):
         product = productFormData.objects.get(id=request.POST.get('selectProduct'))
         bill = request.POST.get('bill')
         buy_price = request.POST.get('buy_price')
+        type = request.POST.get('type')
         quantity = request.POST.get('quantity')
         sell_price = request.POST.get('sell_price')
 
-        data = purchaseFormData.objects.create(vendor=vendor, product=product, bill=bill, buy=buy_price, quantity=quantity, sell=sell_price)
+        data = purchaseFormData.objects.create(vendor=vendor, product=product, bill=bill, buy=buy_price,type = type ,quantity=quantity, sell=sell_price)
+        Transaction.objects.create(purchase=data, debit=Decimal(buy_price) * Decimal(quantity), credit=0, type=type)
         return redirect('/purchase')
     return render(request, 'purchaseForm.html', {'vendor_list': vendor_list, 'product_list': product_list})
+
 
 def deleteDataPurchase(request, id):
     data = purchaseFormData.objects.get(id=id)
@@ -223,12 +226,16 @@ def salesItemForm(request, id):
     if request.method == 'POST':
         stock = StockData.objects.get(id=request.POST.get('selectStock'))
         quantity = int(request.POST.get('quantity'))
+        type = request.POST.get('type')
+        sales_form.type = type
+        sales_form.save()
+        sale_item = SaleItem.objects.create(sales_form=sales_form, stock=stock, quantity=quantity, type=type)
         if stock.total_quantity >= quantity:
-            SaleItem.objects.create(sales_form=sales_form, stock=stock, quantity=quantity)
             stock.total_quantity -= quantity
             stock.save()
             sales_form.total_amount += Decimal(stock.selling_price) * Decimal(quantity)
             sales_form.save()
+            Transaction.objects.create(sale=sale_item, debit=0, credit=sales_form.total_amount, type=type)
             return redirect('/sales') 
         else:
             return redirect('/salesItemForm/' + str(sales_form.id))
@@ -247,3 +254,14 @@ def deleteDataSaleItem(request, id):
 def saleItem(request):
     sale_items = SaleItem.objects.all()
     return render(request, 'saleItem.html', {'sale_items': sale_items})
+
+def accounts(request):
+    transactions = Transaction.objects.all()
+    total_debit = sum(transaction.debit for transaction in transactions)
+    total_credit = sum(transaction.credit for transaction in transactions)
+    return render(request, 'accounts.html', {'transactions': transactions, 'total_debit': total_debit, 'total_credit': total_credit})
+
+def deleteDataAccounts(request, id):
+    data = accountData.objects.get(id=id)
+    data.delete()
+    return redirect('/accounts')

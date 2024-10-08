@@ -17,7 +17,7 @@
         }
         .nav_list{
             padding: 10%;
-            padding-top: 35%;
+            padding-top: 15%;
             list-style-type: none;
             height: 100%;
         }
@@ -42,6 +42,7 @@
             <a href="{% url 'stock' %}"><li>Stock</li></a>
             <a href="{% url 'sales' %}"><li>Sales</li></a>
             <a href="{% url 'saleItem' %}"><li>Sales Item</li></a>
+            <a href="{% url 'accounts' %}"><li>Accounts</li></a>
         </ul>
     </nav>
 
@@ -124,6 +125,10 @@
     {% block saleItem_content %}
 
     {% endblock saleItem_content %}
+
+    {% block accounts_content %}
+
+    {% endblock accounts_content %}
 
 
 </body>

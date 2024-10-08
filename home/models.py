@@ -50,6 +50,7 @@ class purchaseFormData(models.Model):
     vendor = models.ForeignKey(vendorContactForm, on_delete=models.CASCADE)
     product = models.ForeignKey(productFormData, on_delete=models.CASCADE)
     buy = models.TextField(max_length=200)
+    type = models.CharField(max_length=200, default='Cash')
     quantity = models.TextField(max_length=200, null=True, blank=True)  
     sell = models.TextField(max_length=200)
 
@@ -69,6 +70,7 @@ class SalesForm(models.Model):
     employee = models.ForeignKey(employeeContactForm, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    type = models.CharField(max_length=200, default="Cash")
 
     def __str__(self):
         return f"{self.customer.name} - {self.employee.name}"
@@ -77,3 +79,24 @@ class SaleItem(models.Model):
     sales_form = models.ForeignKey(SalesForm, on_delete=models.CASCADE)
     stock = models.ForeignKey(StockData, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+    type = models.CharField(max_length=200, default="Cash")
+
+class accountData(models.Model):
+    date = models.DateField(auto_now_add=True)
+    debit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    credit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    type = models.CharField(max_length=200, default="Cash")
+
+    def __str__(self):
+        return f"{self.date} - {self.type}"
+    
+class Transaction(models.Model):
+    purchase = models.ForeignKey(purchaseFormData, on_delete=models.CASCADE, null=True, blank=True)
+    sale = models.ForeignKey(SaleItem, on_delete=models.CASCADE, null=True, blank=True)
+    debit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    credit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    type = models.CharField(max_length=200, default="Cash")
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.date} - {self.type}"

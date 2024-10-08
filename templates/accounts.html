@@ -1,0 +1,86 @@
+{% extends "index.html" %}
+
+{% block accounts_content %}
+
+<style>
+    *{
+        color: black;
+    }
+   table{
+        border: 1px solid black;
+        width: 80%;
+        height: auto;
+    }
+    .table_container1{
+        width: 80%;
+        display: flex;
+        padding: 3% 0%;
+        justify-content: center;
+        position: absolute;
+        top: 200px;
+        right: 0px;
+    }
+    .table_container2{
+        width: 80%;
+        display: flex;
+        padding: 3% 0%;
+        justify-content: center;
+        position: absolute;
+        top: 100px;
+        right: 0px;
+    }
+    .table_container3{
+        width: 80%;
+        display: flex;
+        padding: 3% 0%;
+        justify-content: center;
+        position: absolute;
+        top: 150px;
+        right: 0px;
+    }
+    th,td{
+        border: 1px solid black;
+    }
+    .action{
+        display: flex;
+        justify-content: space-around;
+    }
+    tr a{
+        width: 50px;
+        color: black;
+    }
+    .create_btn{
+        position: absolute;
+        right: 110px;
+        top: 5px;
+        width: 100px;
+        height: 30px;
+    }
+</style>
+<div class="table_container">
+    <div class="table_container2">
+        <h2>Total Debit: {{total_debit}}</h2>
+    </div>
+    <div class="table_container3">
+        <h2>Total Credit: {{total_credit}}</h2>
+    </div>
+<div class="table_container1">
+    <table>
+        <tbody>
+            <th>Debit</th>
+            <th>Credit</th>
+            <th>Type</th>
+
+        </tbody>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{transaction.debit}}</td>
+                <td>{{transaction.credit}}</td>
+                <td>{{transaction.type}}</td>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+{% endblock accounts_content %}
