@@ -312,11 +312,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from rest_framework.permissions import AllowAny
 from .models import *
 from .serializers import *
 
 
 class Customer(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return CustomerContactForm.objects.all()
     def get(self, request):
@@ -325,7 +327,7 @@ class Customer(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = CustomerSerializer(data=request.data)
+        serializer = CustomerPostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -349,7 +351,7 @@ class CustomerDetail(APIView):
         customer = self.get_object(pk)
         if customer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = CustomerSerializer(customer, data=request.data)
+        serializer = CustomerPostSerializer(customer, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

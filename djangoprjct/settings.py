@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-rbs(gmbi^u(*3@5mwl)&jumkqv3-eo$#q@!js1@u27$q3wb^^-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -146,22 +146,7 @@ STATICFILES_DIRS = [
 TAILWIND_APP_NAME = 'home'
 
 CORS_ALLOW_ALL_ORIGINS = True 
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'authorization',
-    'content-type',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Adjust this to match your React app's URL
+]

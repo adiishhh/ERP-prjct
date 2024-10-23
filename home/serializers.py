@@ -5,6 +5,10 @@ from .models import *
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerContactForm
+        fields = ['name', 'phone', 'email', 'place', 'id']
+class CustomerPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerContactForm
         fields = ['name', 'phone', 'email', 'place']
 
 class EmployeeSerializer(serializers.ModelSerializer):
