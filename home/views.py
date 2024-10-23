@@ -224,6 +224,15 @@ def salesForm(request):
         return redirect('/salesItemForm/' + str(sales_form.id))
     return render(request, 'salesForm.html', {'customer_list': customer_list, 'employee_list': employee_list})
 
+def deleteDataSales(request, id):
+    data = SalesForm.objects.get(id=id)
+    data.delete()
+    return redirect('/sales')
+
+def saleItem(request):
+    sale_items = SaleItem.objects.all()
+    return render(request, 'saleItem.html', {'sale_items': sale_items})
+
 def salesItemForm(request, id):
     sales_form = SalesForm.objects.get(id=id)
     stock_list = StockData.objects.all()
@@ -245,19 +254,12 @@ def salesItemForm(request, id):
             return redirect('/salesItemForm/' + str(sales_form.id))
     return render(request, 'salesItemForm.html', {'stock_list': stock_list, 'sales_form': sales_form})
 
-def deleteDataSales(request, id):
-    data = SalesForm.objects.get(id=id)
-    data.delete()
-    return redirect('/sales')
 
 def deleteDataSaleItem(request, id):
     data = SaleItem.objects.get(id=id)
     data.delete()
     return redirect('/sales')
 
-def saleItem(request):
-    sale_items = SaleItem.objects.all()
-    return render(request, 'saleItem.html', {'sale_items': sale_items})
 
 def accounts(request):
     transactions = Transaction.objects.all()
@@ -297,3 +299,508 @@ def deleteExpense(request, id):
         account_data.delete()
     expense.delete()
     return redirect('/expense')
+
+
+
+
+# _____________________________________________- REST API-__________________________________________________
+
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import generics
+from .models import *
+from .serializers import *
+
+
+class Customer(APIView):
+    def get_queryset(self):
+        return CustomerContactForm.objects.all()
+    def get(self, request):
+        customers = self.get_queryset()
+        serializer = CustomerSerializer(customers, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CustomerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CustomerDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return CustomerContactForm.objects.get(pk=pk)
+        except CustomerContactForm.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        customer = self.get_object(pk)
+        if customer is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        customer = self.get_object(pk)
+        if customer is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CustomerSerializer(customer, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        customer = self.get_object(pk)
+        if customer is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        customer.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class Employee(APIView):
+    def get_queryset(self):
+        return employeeContactForm.objects.all()
+
+    def get(self, request):
+        employees = self.get_queryset()
+        serializer = EmployeeSerializer(employees, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = EmployeeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EmployeeDetail(APIView):
+    def get_object(self, pk):
+        return employeeContactForm.objects.filter(pk=pk).first()
+
+    def get(self, request, pk):
+        employee = self.get_object(pk)
+        if employee is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = EmployeeSerializer(employee)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        employee = self.get_object(pk)
+        if employee is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = EmployeeSerializer(employee, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        employee = self.get_object(pk)
+        if employee is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        employee.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class Category(APIView):
+    def get_queryset(self):
+        return categoryFormData.objects.all()
+
+    def get(self, request):
+        categories = self.get_queryset()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CategoryDetail(APIView):
+    def get_object(self, pk):
+        return categoryFormData.objects.filter(pk=pk).first()
+
+    def get(self, request, pk):
+        category = self.get_object(pk)
+        if category is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        category = self.get_object(pk)
+        if category is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        category = self.get_object(pk)
+        if category is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class Vendor(APIView):
+    def get_queryset(self):
+        return vendorContactForm.objects.all()
+
+    def get(self, request):
+        vendors = self.get_queryset()
+        serializer = VendorSerializer(vendors, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = VendorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class VendorDetail(APIView):
+    def get_object(self, pk):
+        return vendorContactForm.objects.filter(pk=pk).first()
+
+    def get(self, request, pk):
+        vendor = self.get_object(pk)
+        if vendor is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = VendorSerializer(vendor)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        vendor = self.get_object(pk)
+        if vendor is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = VendorSerializer(vendor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        vendor = self.get_object(pk)
+        if vendor is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        vendor.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class Product(APIView):
+    def get_queryset(self):
+        return productFormData.objects.all()
+
+    def get(self, request):
+        products = self.get_queryset()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProductDetail(APIView):
+    def get_object(self, pk):
+        return productFormData.objects.filter(pk=pk).first()
+
+    def get(self, request, pk):
+        product = self.get_object(pk)
+        if product is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        product = self.get_object(pk)
+        if product is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(product, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        product = self.get_object(pk)
+        if product is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class Purchase(APIView):
+    def get_queryset(self):
+        return purchaseFormData.objects.all()
+
+    def get(self, request):
+        purchases = self.get_queryset()
+        serializer = PurchaseSerializer(purchases, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PurchaseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PurchaseDetail(APIView):
+    def get_object(self, pk):
+        return purchaseFormData.objects.filter(pk=pk).first()
+
+    def get(self, request, pk):
+        purchase = self.get_object(pk)
+        if purchase is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = PurchaseSerializer(purchase)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        purchase = self.get_object(pk)
+        if purchase is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = PurchaseSerializer(purchase, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        purchase = self.get_object(pk)
+        if purchase is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        purchase.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class Stock(APIView):
+    def get_queryset(self):
+        return StockData.objects.all()
+
+    def get(self, request):
+        stocks = self.get_queryset()
+        serializer = StockSerializer(stocks, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        product_id = request.data.get('product')
+        product = productFormData.objects.get(id=product_id)
+        
+        purchases = purchaseFormData.objects.filter(product=product)
+        total_purchase_quantity = sum(int(purchase.quantity) for purchase in purchases if purchase.quantity)
+        
+        sales = SaleItem.objects.filter(stock__product=product)
+        total_sale_quantity = sum(int(sale.quantity) for sale in sales if sale.quantity)
+        
+        if product.unit:
+            total_quantity = int(product.unit) + total_purchase_quantity - total_sale_quantity
+        else:
+            total_quantity = total_purchase_quantity - total_sale_quantity
+        
+        stock_data, created = StockData.objects.get_or_create(product=product, defaults={'total_quantity': total_quantity, 'selling_price': product.price})
+        
+        if not created:
+            stock_data.total_quantity = total_quantity
+            stock_data.selling_price = product.price
+            stock_data.save()
+        
+        serializer = StockSerializer(stock_data)
+        return Response(serializer.data)
+
+class StockDetail(APIView):
+    def get_object(self, pk):
+        return StockData.objects.filter(pk=pk).first()
+
+    def get(self, request, pk):
+        stock = self.get_object(pk)
+        if stock is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = StockSerializer(stock)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        stock = self.get_object(pk)
+        if stock is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = StockSerializer(stock, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        stock = self.get_object(pk)
+        if stock is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        stock.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class Sales(APIView):
+    def get_queryset(self):
+        return SalesForm.objects.all()
+
+    def get(self, request):
+        sales = self.get_queryset()
+        serializer = SalesSerializer(sales, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = SalesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SalesDetail(APIView):
+    def get_object(self, pk):
+        return SalesForm.objects.filter(pk=pk).first()
+
+    def get(self, request, pk):
+        sales = self.get_object(pk)
+        if sales is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = SalesSerializer(sales)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        sales = self.get_object(pk)
+        if sales is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        sales.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class SaleItemView(generics.ListCreateAPIView):
+    queryset = SaleItem.objects.all()
+    serializer_class = SaleItemSerializer
+
+class SaleItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SaleItem.objects.all()
+    serializer_class = SaleItemSerializer
+
+    
+class SalesItemFormView(generics.UpdateAPIView):
+    queryset = SalesForm.objects.all()
+    serializer_class = SalesFormSerializer
+
+    def update(self, request, *args, **kwargs):
+        sales_form = self.get_object()
+        stock = StockData.objects.get(id=request.data.get('selectStock'))
+        quantity = int(request.data.get('quantity'))
+        type = request.data.get('type')
+        sales_form.type = type
+        sales_form.save()
+        sale_item = SaleItem.objects.create(sales_form=sales_form, stock=stock, quantity=quantity, type=type)
+        if stock.total_quantity >= quantity:
+            stock.total_quantity -= quantity
+            stock.save()
+            sales_form.total_amount += Decimal(stock.selling_price) * Decimal(quantity)
+            sales_form.save()
+            Transaction.objects.create(sale=sale_item, debit=0, credit=sales_form.total_amount, type=type)
+            return Response({'message': 'Sale item created successfully'})
+        else:
+            return Response({'message': 'Not enough stock'}, status=400)
+
+class DeleteSaleItemView(generics.DestroyAPIView):
+    queryset = SaleItem.objects.all()
+    serializer_class = SaleItemSerializer
+
+class Accounts(APIView):
+    def get_queryset(self):
+        return Transaction.objects.all()
+
+    def get_serializer(self):
+        return TransactionSerializer
+
+    def get(self, request):
+        transactions = self.get_queryset()
+        serializer = self.get_serializer()(transactions, many=True)
+        account_data = accountData.objects.all()
+        serializer_account_data = AccountSerializer(account_data, many=True)
+        total_debit = sum(transaction.debit for transaction in transactions) + sum(data.debit for data in account_data)
+        total_credit = sum(transaction.credit for transaction in transactions) + sum(data.credit for data in account_data)
+        return Response({'transactions': serializer.data, 'account_data': serializer_account_data.data, 'total_debit': total_debit, 'total_credit': total_credit})
+
+class AccountDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return accountData.objects.get(pk=pk)
+        except accountData.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        account_data = self.get_object(pk)
+        if account_data is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = AccountSerializer(account_data)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        account_data = self.get_object(pk)
+        if account_data is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        account_data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class Expense(APIView):
+    def get_queryset(self):
+        return expenseData.objects.all()
+
+    def get_serializer(self):
+        return ExpenseSerializer
+
+    def post(self, request):
+        expense = request.data.get('expense')
+        amount = request.data.get('amount')
+        expenseData.objects.create(expense=expense, amount=amount)
+        accountData.objects.create(debit=Decimal(amount), credit=0, type="Expense")
+        return Response(status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        expense = self.get_queryset()
+        serializer = self.get_serializer()(expense, many=True)
+        return Response(serializer.data)
+
+class ExpenseForm(APIView):
+    def get_queryset(self):
+        return expenseData.objects.all()
+
+    def get_serializer(self):
+        return ExpenseSerializer
+
+    def post(self, request):
+        expense = request.data.get('expense')
+        amount = request.data.get('amount')
+        data = expenseData.objects.create(expense=expense, amount=amount)
+        accountData.objects.create(debit=Decimal(amount), credit=0, type="Expense")
+        return Response(status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        expense = self.get_queryset()
+        serializer = self.get_serializer()(expense, many=True)
+        return Response(serializer.data)
+
+class DeleteExpense(APIView):
+    def get_object(self, pk):
+        try:
+            return expenseData.objects.get(pk=pk)
+        except expenseData.DoesNotExist:
+            return None
+
+    def delete(self, request, pk):
+        expense = self.get_object(pk)
+        if expense is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        account_data = accountData.objects.filter(type="Expense", debit=expense.amount)
+        if account_data.exists():
+            account_data.delete()
+        expense.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

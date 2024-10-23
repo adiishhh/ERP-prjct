@@ -39,7 +39,7 @@ class vendorContactForm(models.Model):
 class productFormData(models.Model):
     product = models.ForeignKey(categoryFormData, on_delete=models.CASCADE)
     name = models.TextField(max_length=200)
-    unit = models.TextField(max_length=200, null=True, blank=True)  # Update the unit field to be nullable
+    unit = models.TextField(max_length=200, null=True, blank=True) 
     price = models.TextField(max_length=200)
 
     def __str__(self):
