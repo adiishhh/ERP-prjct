@@ -45,7 +45,7 @@
         <tbody>
             <th>Category</th>
             <th>Name</th>
-            <th>Unit</th>
+            {% comment %} <th>Unit</th> {% endcomment %}
             <th>Price</th>
             <th>Action</th>
         </tbody>
@@ -54,7 +54,7 @@
             <tr>
                 <td>{{e.product.name}}</td>
                 <td>{{e.name}}</td>
-                <td>{{e.unit}}</td>
+                {% comment %} <td>{{e.unit}}</td> {% endcomment %}
                 <td>{{e.price}}</td>
 
                 <td class="action">

@@ -125,10 +125,10 @@ def productForm(request):
     if request.method == 'POST':
         category = categoryFormData.objects.get(id=request.POST.get('category'))
         name = request.POST.get('name')
-        unit = request.POST.get('unit')
+        # unit = request.POST.get('unit')
         price = request.POST.get('price')
 
-        data = productFormData.objects.create(product=category, name=name, unit=unit, price=price)
+        data = productFormData.objects.create(product=category, name=name, price=price)
         return redirect('/product')
     return render(request, 'productForm.html', {'data': categories})
 
@@ -136,11 +136,11 @@ def updatePageProduct(request, id):
     data = productFormData.objects.get(id=id)
     if request.method == 'POST':
         name = request.POST.get('name')
-        unit = request.POST.get('unit')
+        # unit = request.POST.get('unit')
         price = request.POST.get('price')
         
         data.name = name
-        data.unit = unit if unit else None  # Update the unit field to be nullable
+        # data.unit = unit if unit else None  # Update the unit field to be nullable
         data.price = price
         data.save()
         return redirect('/product')
@@ -334,6 +334,7 @@ class Customer(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CustomerDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         try:
             return CustomerContactForm.objects.get(pk=pk)
@@ -365,6 +366,7 @@ class CustomerDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Employee(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return employeeContactForm.objects.all()
 
@@ -374,13 +376,14 @@ class Employee(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = EmployeeSerializer(data=request.data)
+        serializer = EmployeePostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EmployeeDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         return employeeContactForm.objects.filter(pk=pk).first()
 
@@ -395,7 +398,7 @@ class EmployeeDetail(APIView):
         employee = self.get_object(pk)
         if employee is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = EmployeeSerializer(employee, data=request.data)
+        serializer = EmployeePostSerializer(employee, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -409,6 +412,7 @@ class EmployeeDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Category(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return categoryFormData.objects.all()
 
@@ -418,13 +422,14 @@ class Category(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = CategorySerializer(data=request.data)
+        serializer = CategoryPostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CategoryDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         return categoryFormData.objects.filter(pk=pk).first()
 
@@ -439,7 +444,7 @@ class CategoryDetail(APIView):
         category = self.get_object(pk)
         if category is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = CategorySerializer(category, data=request.data)
+        serializer = CategoryPostSerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -453,6 +458,7 @@ class CategoryDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class Vendor(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return vendorContactForm.objects.all()
 
@@ -462,13 +468,14 @@ class Vendor(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = VendorSerializer(data=request.data)
+        serializer = VendorPostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VendorDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         return vendorContactForm.objects.filter(pk=pk).first()
 
@@ -483,7 +490,7 @@ class VendorDetail(APIView):
         vendor = self.get_object(pk)
         if vendor is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = VendorSerializer(vendor, data=request.data)
+        serializer = VendorPostSerializer(vendor, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -541,6 +548,7 @@ class ProductDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Purchase(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return purchaseFormData.objects.all()
 
@@ -550,13 +558,14 @@ class Purchase(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = PurchaseSerializer(data=request.data)
+        serializer = PurchasePostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PurchaseDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         return purchaseFormData.objects.filter(pk=pk).first()
 
@@ -571,7 +580,7 @@ class PurchaseDetail(APIView):
         purchase = self.get_object(pk)
         if purchase is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = PurchaseSerializer(purchase, data=request.data)
+        serializer = PurchasePostSerializer(purchase, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

@@ -14,9 +14,19 @@ class CustomerPostSerializer(serializers.ModelSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = employeeContactForm
+        fields = ['name', 'phone', 'email', 'place', 'salary', 'id']
+
+class EmployeePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = employeeContactForm
         fields = ['name', 'phone', 'email', 'place', 'salary']
 
 class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = categoryFormData
+        fields = ['name', 'id']
+
+class CategoryPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = categoryFormData
         fields = ['name']
@@ -24,14 +34,24 @@ class CategorySerializer(serializers.ModelSerializer):
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = vendorContactForm
+        fields = ['name', 'phone', 'email','id']
+
+class VendorPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = vendorContactForm
         fields = ['name', 'phone', 'email']
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = productFormData
-        fields = ['name', 'unit', 'price', 'product']
+        fields = ['name','price', 'product']
 
 class PurchaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = purchaseFormData
+        fields = ['vendor', 'product', 'bill', 'buy', 'type', 'quantity', 'sell', 'id']
+
+class PurchasePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = purchaseFormData
         fields = ['vendor', 'product', 'bill', 'buy', 'type', 'quantity', 'sell']
