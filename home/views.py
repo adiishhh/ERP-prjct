@@ -504,6 +504,8 @@ class VendorDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Product(APIView):
+    permission_classes = [AllowAny]
+
     def get_queryset(self):
         return productFormData.objects.all()
 
@@ -513,13 +515,24 @@ class Product(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        # Get the category ID from the request data
+        category_id = request.data.get('product')
+
+        # Retrieve the category instance using the ID
+        try:
+            category = categoryFormData.objects.get(pk=category_id)
+        except categoryFormData.DoesNotExist:
+            return Response({"error": "Category not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Create the product with the category instance
+        serializer = ProductPostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(product=category)  # Save the product with the category instance
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProductDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         return productFormData.objects.filter(pk=pk).first()
 
@@ -534,7 +547,7 @@ class ProductDetail(APIView):
         product = self.get_object(pk)
         if product is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = ProductSerializer(product, data=request.data)
+        serializer = ProductPostSerializer(product, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -594,6 +607,8 @@ class PurchaseDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Stock(APIView):
+    permission_classes = [AllowAny]
+
     def get_queryset(self):
         return StockData.objects.all()
 
@@ -612,10 +627,8 @@ class Stock(APIView):
         sales = SaleItem.objects.filter(stock__product=product)
         total_sale_quantity = sum(int(sale.quantity) for sale in sales if sale.quantity)
         
-        if product.unit:
-            total_quantity = int(product.unit) + total_purchase_quantity - total_sale_quantity
-        else:
-            total_quantity = total_purchase_quantity - total_sale_quantity
+        # Removed the unit check
+        total_quantity = total_purchase_quantity - total_sale_quantity
         
         stock_data, created = StockData.objects.get_or_create(product=product, defaults={'total_quantity': total_quantity, 'selling_price': product.price})
         
@@ -624,10 +637,11 @@ class Stock(APIView):
             stock_data.selling_price = product.price
             stock_data.save()
         
-        serializer = StockSerializer(stock_data)
+        serializer = StockPostSerializer(stock_data)
         return Response(serializer.data)
 
 class StockDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         return StockData.objects.filter(pk=pk).first()
 
@@ -642,7 +656,7 @@ class StockDetail(APIView):
         stock = self.get_object(pk)
         if stock is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = StockSerializer(stock, data=request.data)
+        serializer = StockPostSerializer(stock, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -654,8 +668,10 @@ class StockDetail(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         stock.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 class Sales(APIView):
+    permission_classes = [AllowAny]
+
     def get_queryset(self):
         return SalesForm.objects.all()
 
@@ -665,13 +681,27 @@ class Sales(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = SalesSerializer(data=request.data)
+        serializer = SalesPostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            sale = serializer.save()  # Create the sale
+
+            # Create the SaleItem using the data from the request
+            sale_item_data = {
+                'sales_form': sale.id,  # Reference to the created sale
+                'stock': request.data.get('product'),  # Assuming 'product' is sent in the request
+                'quantity': request.data.get('quantity'),  # Assuming 'quantity' is sent in the request
+            }
+            sale_item_serializer = SaleItemSerializer(data=sale_item_data)
+            if sale_item_serializer.is_valid():
+                sale_item_serializer.save()  # Create the sale item
+            else:
+                return Response(sale_item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(SalesSerializer(sale).data, status=status.HTTP_201_CREATED)  # Return the serialized sale data
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SalesDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         return SalesForm.objects.filter(pk=pk).first()
 
@@ -690,10 +720,12 @@ class SalesDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class SaleItemView(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
     queryset = SaleItem.objects.all()
     serializer_class = SaleItemSerializer
 
 class SaleItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny]
     queryset = SaleItem.objects.all()
     serializer_class = SaleItemSerializer
 

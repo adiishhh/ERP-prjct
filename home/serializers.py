@@ -42,6 +42,12 @@ class VendorPostSerializer(serializers.ModelSerializer):
         fields = ['name', 'phone', 'email']
 
 class ProductSerializer(serializers.ModelSerializer):
+    product = CategorySerializer()
+    class Meta:
+        model = productFormData
+        fields = ['name','price', 'product', 'id']
+
+class ProductPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = productFormData
         fields = ['name','price', 'product']
@@ -59,17 +65,32 @@ class PurchasePostSerializer(serializers.ModelSerializer):
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockData
+        fields = ['product', 'total_quantity', 'selling_price', 'id']
+
+class StockPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockData
         fields = ['product', 'total_quantity', 'selling_price']
 
 class SalesSerializer(serializers.ModelSerializer):
+    customerName = serializers.CharField(source='customer.name', read_only=True)
+    employeeName = serializers.CharField(source='employee.name', read_only=True)
+
+    class Meta:
+        model = SalesForm
+        fields = ['id', 'customer', 'employee', 'customerName', 'employeeName', 'total_amount', 'type']
+
+class SalesPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesForm
         fields = ['customer', 'employee', 'total_amount', 'type']
 
 class SaleItemSerializer(serializers.ModelSerializer):
+    productName = serializers.CharField(source='stock.name', read_only=True)  # Assuming 'stock' is a ForeignKey to a Product model
+
     class Meta:
         model = SaleItem
-        fields = ['id', 'sales_form', 'stock', 'quantity', 'type']
+        fields = ['id', 'sales_form', 'stock', 'productName', 'quantity']
 
 class SalesFormSerializer(serializers.ModelSerializer):
     class Meta:
