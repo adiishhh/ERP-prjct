@@ -503,7 +503,7 @@ class VendorDetail(APIView):
         vendor.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-class Product(APIView):
+class  Product(APIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
@@ -685,19 +685,33 @@ class Sales(APIView):
         if serializer.is_valid():
             sale = serializer.save()  # Create the sale
 
+            # Check if the product exists
+            product_id = request.data.get('product')
+            try:
+                product = productFormData.objects.get(id=product_id)  # Assuming you have a Product model
+            except productFormData.DoesNotExist:
+                return Response({"error": "Product does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
             # Create the SaleItem using the data from the request
+            stock_id = request.data.get('product')  # Get the product ID from the request
+            try:
+                stock = StockData.objects.get(product__id=stock_id)  # Get StockData associated with the product ID
+            except StockData.DoesNotExist:
+                return Response({"error": "Stock does not exist for the selected product."}, status=status.HTTP_400_BAD_REQUEST)
+            
             sale_item_data = {
                 'sales_form': sale.id,  # Reference to the created sale
-                'stock': request.data.get('product'),  # Assuming 'product' is sent in the request
+                'stock': stock.id,  # Use the ID of the StockData instance
                 'quantity': request.data.get('quantity'),  # Assuming 'quantity' is sent in the request
             }
             sale_item_serializer = SaleItemSerializer(data=sale_item_data)
             if sale_item_serializer.is_valid():
                 sale_item_serializer.save()  # Create the sale item
+                return Response(sale_item_serializer.data, status=status.HTTP_201_CREATED)  # Return the serialized sale item data
             else:
+                print("SaleItem errors:", sale_item_serializer.errors)  # Log validation errors
                 return Response(sale_item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            return Response(SalesSerializer(sale).data, status=status.HTTP_201_CREATED)  # Return the serialized sale data
+        print("Sales errors:", serializer.errors)  # Log validation errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SalesDetail(APIView):

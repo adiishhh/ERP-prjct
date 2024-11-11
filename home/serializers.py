@@ -86,11 +86,13 @@ class SalesPostSerializer(serializers.ModelSerializer):
         fields = ['customer', 'employee', 'total_amount', 'type']
 
 class SaleItemSerializer(serializers.ModelSerializer):
-    productName = serializers.CharField(source='stock.name', read_only=True)  # Assuming 'stock' is a ForeignKey to a Product model
+    productName = serializers.CharField(source='stock.product.name', read_only=True)
+    customerName = serializers.CharField(source='sales_form.customer.name', read_only=True)
+    employeeName = serializers.CharField(source='sales_form.employee.name', read_only=True)
 
     class Meta:
         model = SaleItem
-        fields = ['id', 'sales_form', 'stock', 'productName', 'quantity']
+        fields = ['id', 'sales_form', 'stock', 'quantity', 'productName', 'customerName', 'employeeName']
 
 class SalesFormSerializer(serializers.ModelSerializer):
     class Meta:
