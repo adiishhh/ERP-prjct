@@ -683,35 +683,34 @@ class Sales(APIView):
     def post(self, request):
         serializer = SalesPostSerializer(data=request.data)
         if serializer.is_valid():
-            sale = serializer.save()  # Create the sale
+            sale = serializer.save() 
 
-            # Check if the product exists
+           
             product_id = request.data.get('product')
             try:
-                product = productFormData.objects.get(id=product_id)  # Assuming you have a Product model
+                product = productFormData.objects.get(id=product_id)  
             except productFormData.DoesNotExist:
                 return Response({"error": "Product does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Create the SaleItem using the data from the request
-            stock_id = request.data.get('product')  # Get the product ID from the request
+            stock_id = request.data.get('product') 
             try:
-                stock = StockData.objects.get(product__id=stock_id)  # Get StockData associated with the product ID
+                stock = StockData.objects.get(product__id=stock_id) 
             except StockData.DoesNotExist:
                 return Response({"error": "Stock does not exist for the selected product."}, status=status.HTTP_400_BAD_REQUEST)
             
             sale_item_data = {
-                'sales_form': sale.id,  # Reference to the created sale
-                'stock': stock.id,  # Use the ID of the StockData instance
-                'quantity': request.data.get('quantity'),  # Assuming 'quantity' is sent in the request
+                'sales_form': sale.id,  
+                'stock': stock.id, 
+                'quantity': request.data.get('quantity'),  
             }
             sale_item_serializer = SaleItemSerializer(data=sale_item_data)
             if sale_item_serializer.is_valid():
-                sale_item_serializer.save()  # Create the sale item
-                return Response(sale_item_serializer.data, status=status.HTTP_201_CREATED)  # Return the serialized sale item data
+                sale_item_serializer.save() 
+                return Response(sale_item_serializer.data, status=status.HTTP_201_CREATED) 
             else:
-                print("SaleItem errors:", sale_item_serializer.errors)  # Log validation errors
+                print("SaleItem errors:", sale_item_serializer.errors)  
                 return Response(sale_item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        print("Sales errors:", serializer.errors)  # Log validation errors
+        print("Sales errors:", serializer.errors)  
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SalesDetail(APIView):
@@ -808,6 +807,7 @@ class AccountDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class Expense(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return expenseData.objects.all()
 
@@ -827,6 +827,7 @@ class Expense(APIView):
         return Response(serializer.data)
 
 class ExpenseForm(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return expenseData.objects.all()
 
@@ -846,6 +847,11 @@ class ExpenseForm(APIView):
         return Response(serializer.data)
 
 class DeleteExpense(APIView):
+    permission_classes = [AllowAny]  # Adjust this as needed
+
+    def get_queryset(self):
+        return expenseData.objects.all()
+
     def get_object(self, pk):
         try:
             return expenseData.objects.get(pk=pk)

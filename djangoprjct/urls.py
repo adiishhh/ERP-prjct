@@ -60,10 +60,10 @@ urlpatterns = [
     path('saleItems/<int:pk>/', SaleItemDetailView.as_view(), name='sale_item_detail'),
     path('saleItemform/<int:pk>/', SalesItemFormView.as_view(), name='sales_item_form'),
     path('delete-sale-item/<int:pk>/', DeleteSaleItemView.as_view(), name='delete_sale_item'),
-    path('accounts/', Accounts.as_view(), name='accountss'),
+    path('apiaccounts/', Accounts.as_view(), name='accountss'),
     path('deleteDataAccounts/<int:pk>/', AccountDetail.as_view(), name='deleteDataAccounts'),
-    path('expense/', Expense.as_view(), name='expenses'),
-    path('expenseForm/', ExpenseForm.as_view(), name='expenseForm'),
-    path('deleteExpense/<int:pk>/', DeleteExpense.as_view(), name='deleteExpense'),
+    path('expenses/', Expense.as_view(), name='expenses'),
+    path('expenseForms/', ExpenseForm.as_view(), name='expenseForms'),
+    path('deleteExpenses/<int:pk>/', DeleteExpense.as_view(), name='deleteExpenses'),
 ]
 

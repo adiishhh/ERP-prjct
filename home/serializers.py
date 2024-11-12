@@ -117,4 +117,8 @@ class AccountSerializer(serializers.ModelSerializer):
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = expenseData
+        fields = ['expense', 'amount','id']
+class ExpensePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = expenseData
         fields = ['expense', 'amount']
