@@ -770,6 +770,7 @@ class DeleteSaleItemView(generics.DestroyAPIView):
     serializer_class = SaleItemSerializer
 
 class Accounts(APIView):
+    permission_classes = [AllowAny]
     def get_queryset(self):
         return Transaction.objects.all()
 
@@ -783,9 +784,15 @@ class Accounts(APIView):
         serializer_account_data = AccountSerializer(account_data, many=True)
         total_debit = sum(transaction.debit for transaction in transactions) + sum(data.debit for data in account_data)
         total_credit = sum(transaction.credit for transaction in transactions) + sum(data.credit for data in account_data)
-        return Response({'transactions': serializer.data, 'account_data': serializer_account_data.data, 'total_debit': total_debit, 'total_credit': total_credit})
+        return Response({
+            'transactions': serializer.data,
+            'account_data': serializer_account_data.data,
+            'total_debit': total_debit,
+            'total_credit': total_credit
+        })
 
 class AccountDetail(APIView):
+    permission_classes = [AllowAny]
     def get_object(self, pk):
         try:
             return accountData.objects.get(pk=pk)

@@ -109,11 +109,6 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = ['debit', 'credit', 'type']  
 
-class AccountSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = accountData
-        fields = ['debit', 'credit', 'type'] 
-
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = expenseData
@@ -122,3 +117,13 @@ class ExpensePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = expenseData
         fields = ['expense', 'amount']
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ['debit', 'credit', 'type']
+
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = accountData
+        fields = ['debit', 'credit', 'type', 'id'] 
