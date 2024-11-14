@@ -190,8 +190,8 @@ def stock(request):
         sales = SaleItem.objects.filter(stock__product=product)
         total_sale_quantity = sum(int(sale.quantity) for sale in sales if sale.quantity)
         
-        if product.unit:
-            total_quantity = int(product.unit) + total_purchase_quantity - total_sale_quantity
+        if product:
+            total_quantity =  total_purchase_quantity - total_sale_quantity
         else:
             total_quantity = total_purchase_quantity - total_sale_quantity
         
@@ -573,8 +573,33 @@ class Purchase(APIView):
     def post(self, request):
         serializer = PurchasePostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            purchase_instance = serializer.save()
+
+            # Retrieve the quantity from the request data
+            quantity = request.data.get('quantity')
+            type = request.data.get('type')
+
+            # Ensure quantity is a valid integer
+            try:
+                quantity = int(quantity)  # Convert quantity to an integer
+            except (ValueError, TypeError):
+                return Response({"error": "Invalid quantity."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Ensure buy is a valid decimal
+            try:
+                buy_price = float(purchase_instance.buy)  # Convert buy price to float
+            except (ValueError, TypeError):
+                return Response({"error": "Invalid buy price."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Calculate the debit as buy price multiplied by quantity
+            debit_amount = buy_price * quantity
+
+            # Create the account entry with the calculated debit
+            account_entry = accountData(debit=debit_amount, credit=0, type = type)
+            account_entry.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PurchaseDetail(APIView):
@@ -685,7 +710,13 @@ class Sales(APIView):
         if serializer.is_valid():
             sale = serializer.save() 
 
-           
+            
+            accountData.objects.create(
+                debit=0,
+                credit=sale.total_amount,
+                type=sale.type
+            )
+
             product_id = request.data.get('product')
             try:
                 product = productFormData.objects.get(id=product_id)  
@@ -710,6 +741,7 @@ class Sales(APIView):
             else:
                 print("SaleItem errors:", sale_item_serializer.errors)  
                 return Response(sale_item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         print("Sales errors:", serializer.errors)  
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -729,6 +761,12 @@ class SalesDetail(APIView):
         sales = self.get_object(pk)
         if sales is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Delete related account entry if it exists
+        account_entry = accountData.objects.filter(type='Sale', credit=sales.total_amount).first()
+        if account_entry:
+            account_entry.delete()
+
         sales.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
